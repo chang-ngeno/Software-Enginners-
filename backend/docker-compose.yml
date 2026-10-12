@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: flask_db
+    # Read environment variables directly from the .env file
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: flask_app
+    ports:
+      - "8080:8080"
+    # Inject the exact same .env file variables into Flask
+    env_file:
+      - .env
+    environment:
+      - PORT=8080
+      # Overrides localhost to target the container named 'db'
+      - DB_HOST=db 
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
