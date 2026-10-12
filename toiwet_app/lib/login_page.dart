@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_config.dart';
 import 'main.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,8 +19,6 @@ class LoginPageState extends State<LoginPage> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  final String _backendUrl = 'http://127.0.0.1:5000/api/register_or_login';
 
   @override
   void initState() {
@@ -56,11 +55,19 @@ class LoginPageState extends State<LoginPage> {
       return;
     }
 
+    final loginEndpoint = ApiConfig.loginEndpoint;
+    if (loginEndpoint == null) {
+      _showErrorSnackBar(
+        'Backend URL is missing or invalid. Set API_BASE_URL with --dart-define.',
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
       final response = await http.post(
-        Uri.parse(_backendUrl),
+        loginEndpoint,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,
@@ -133,7 +140,7 @@ class LoginPageState extends State<LoginPage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(25),
                             child: Image.asset(
-                              'assets/logo.png',
+                              'assets/logo.jpeg',
                               height: 50,
                               width: 50,
                               fit: BoxFit.cover,
