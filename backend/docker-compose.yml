@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16-alpine
@@ -18,12 +16,12 @@ services:
     build: .
     container_name: flask_app
     ports:
-      - "8080:8080"
+      - "5000:5000"
     # Inject the exact same .env file variables into Flask
     env_file:
       - .env
     environment:
-      - PORT=8080
+      - PORT=5000
       # Overrides localhost to target the container named 'db'
       - DB_HOST=db 
     depends_on:
